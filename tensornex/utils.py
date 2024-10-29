@@ -13,6 +13,6 @@ def calcR2X(X, Xhat):
     bottom = norm(xIn) ** 2.0
     return 1 - top / bottom
 
-def factors_to_tensor(factors):
+def fac2tensor(factors):
     full_tensor = factors[0] @ khatri_rao(factors, skip_matrix=0).T
     return fold(full_tensor, 0, [ff.shape[0] for ff in factors])

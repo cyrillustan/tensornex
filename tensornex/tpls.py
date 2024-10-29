@@ -8,7 +8,7 @@ import numpy as np
 from numpy.linalg import norm, lstsq
 from tensorly.tenalg import multi_mode_dot, outer
 from tensorly.decomposition._cp import parafac
-from .utils import calcR2X, factors_to_tensor
+from .utils import calcR2X, fac2tensor
 from .missingvals import miss_tensordot, miss_mmodedot
 
 
@@ -40,7 +40,7 @@ class tPLS(Mapping, metaclass=ABCMeta):
     def copy(self):
         return copy(self)
 
-    def preprocess(self, X, Y):
+    def preprocess(self, X: np.ndarray, Y: np.ndarray):
         # check input integrity
         assert X.shape[0] == Y.shape[0]
         assert Y.ndim <= 2, "Only a matrix (2-mode tensor) Y is acceptable."
@@ -102,7 +102,7 @@ class tPLS(Mapping, metaclass=ABCMeta):
             self.coef_[:, a] = lstsq(self.X_factors[0], self.Y_factors[0][:, a], rcond=-1)[0]
             Y -= self.X_factors[0] @ self.coef_[:, [a]] @ self.Y_factors[1][:, [a]].T
             # Y -= T b q' = T pinv(T) u q' = T lstsq(T, u) q'; b = inv(T'T) T' u = pinv(T) u
-            self.R2X[a] = calcR2X(original_X - self.X_mean, factors_to_tensor(self.X_factors))
+            self.R2X[a] = calcR2X(original_X - self.X_mean, fac2tensor(self.X_factors))
             self.R2Y[a] = calcR2X(original_Y - self.Y_mean, self.predict(original_X) - self.Y_mean)
 
 
@@ -160,4 +160,4 @@ class tPLS(Mapping, metaclass=ABCMeta):
         return X_scores
 
     def X_reconstructed(self):
-        return factors_to_tensor(self.X_factors) + self.X_mean
+        return fac2tensor(self.X_factors) + self.X_mean

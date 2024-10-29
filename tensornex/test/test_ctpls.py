@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from tensornex.ctpls import ctPLS
-from tensornex.tpls import tPLS, factors_to_tensor
+from tensornex.tpls import tPLS, fac2tensor
 from tensornex.utils import calcR2X
 
 
@@ -31,7 +31,7 @@ def test_ctPLS_dimensions(X0dim, X1dim, X2dim):
 def test_ctPLS_increasing_R2Y_synthetic():
     dims = [(10, 9, 8, 7), (10, 8, 7)]
     n_latent = 4
-    Xs = [factors_to_tensor([np.random.rand(d, n_latent) for d in ds]) for ds in dims]
+    Xs = [fac2tensor([np.random.rand(d, n_latent) for d in ds]) for ds in dims]
     Y = np.random.rand(10, 4) @ np.random.rand(5, 4).T
     pls = ctPLS(6)
     pls.fit(Xs, Y)

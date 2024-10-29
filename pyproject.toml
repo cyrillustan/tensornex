@@ -22,6 +22,7 @@ pytest-cov = "^3.0.0"
 tensordata = { git = "https://github.com/meyer-lab/tensordata.git", branch = "main" }
 pyright = "^1.1.379"
 ruff = "^0.6.4"
+setuptools = "^75.2.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

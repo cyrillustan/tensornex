@@ -8,7 +8,7 @@ from numpy.linalg import norm, lstsq
 from tensorly.tenalg import multi_mode_dot
 from tensorly.decomposition._cp import parafac
 
-from .utils import calcR2X, factors_to_tensor
+from .utils import calcR2X, fac2tensor
 from .missingvals import miss_tensordot, miss_mmodedot
 
 
@@ -113,8 +113,8 @@ class ctPLS(Mapping, metaclass=ABCMeta):
                 oldU = self.Y_factors[0][:, a].copy()
 
             for (ti, X) in enumerate(Xs):
-                X -= factors_to_tensor([ff[:, [a]] for ff in self.Xs_factors[ti]])
-                self.R2Xs[ti][a] = calcR2X(oXs[ti] - self.Xs_mean[ti], factors_to_tensor(self.Xs_factors[ti]))
+                X -= fac2tensor([ff[:, [a]] for ff in self.Xs_factors[ti]])
+                self.R2Xs[ti][a] = calcR2X(oXs[ti] - self.Xs_mean[ti], fac2tensor(self.Xs_factors[ti]))
             self.coef_[:, a] = lstsq(self.factor_T, self.Y_factors[0][:, a], rcond=-1)[0]
             Y -= self.factor_T @ self.coef_[:, [a]] @ self.Y_factors[1][:, [a]].T
             self.R2Y[a] = calcR2X(oY - self.Y_mean, self.predict(oXs) - self.Y_mean)
@@ -142,7 +142,7 @@ class ctPLS(Mapping, metaclass=ABCMeta):
                                              for ti in range(self.Xs_len)],
                                             axis=0)
             for (ti, X) in enumerate(Xs):
-                X -= factors_to_tensor([X_projection[:, [a]]] + [ff[:, [a]] for ff in self.Xs_factors[ti][1:]])
+                X -= fac2tensor([X_projection[:, [a]]] + [ff[:, [a]] for ff in self.Xs_factors[ti][1:]])
         return X_projection @ self.coef_ @ self.Y_factors[1].T + self.Y_mean
 
 
@@ -169,7 +169,7 @@ class ctPLS(Mapping, metaclass=ABCMeta):
 
             X_scores[:, a] = np.average(Ts, axis=0)
             for (ti, X) in enumerate(Xs):
-                X -= factors_to_tensor([X_scores[:, [a]]] + [ff[:, [a]] for ff in self.Xs_factors[ti][1:]])
+                X -= fac2tensor([X_scores[:, [a]]] + [ff[:, [a]] for ff in self.Xs_factors[ti][1:]])
 
         if Y is not None:
             Y = Y.copy()
@@ -191,4 +191,4 @@ class ctPLS(Mapping, metaclass=ABCMeta):
         return X_scores
 
     def Xs_reconstructed(self):
-        return [factors_to_tensor(self.Xs_factors[ti]) + self.Xs_mean[ti] for ti in range(self.Xs_len)]
+        return [fac2tensor(self.Xs_factors[ti]) + self.Xs_mean[ti] for ti in range(self.Xs_len)]
