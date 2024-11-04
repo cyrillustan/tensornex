@@ -1,6 +1,6 @@
 import pickle
 import numpy as np
-from .cmtf import perform_CP, calcR2X
+from .cp import perform_CP, calcR2X
 from tensorly.tenalg import svd_interface
 from .SVD_impute import IterativeSVD
 from .impute import entry_drop, joint_entry_drop, chord_drop

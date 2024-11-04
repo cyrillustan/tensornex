@@ -8,7 +8,7 @@ import matplotlib.patches as mpatches
 import seaborn as sns
 import scipy.cluster.hierarchy as sch
 
-from .cmtf import perform_CP, calcR2X
+from .cp import perform_CP, calcR2X
 from .tpls import tPLS
 
 
@@ -20,7 +20,7 @@ def xplot_R2X(data: xr.DataArray, top_rank=12, ax=None, method=perform_CP):
 
     for r in ranks:
         cp = method(data.to_numpy(), r)
-        R2Xs.append(calcR2X(cp, tIn=data.to_numpy()))
+        R2Xs.append(calcR2X(cp, data.to_numpy()))
 
     plt_indep = ax is None
     if plt_indep:
