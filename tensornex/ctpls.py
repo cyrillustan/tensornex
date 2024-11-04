@@ -9,7 +9,7 @@ from tensorly.tenalg import multi_mode_dot
 from tensorly.decomposition._cp import parafac
 
 from .utils import calcR2X, fac2tensor
-from .missingvals import miss_tensordot, miss_mmodedot
+from .linalg import miss_tensordot, miss_mmodedot
 
 
 class ctPLS(Mapping, metaclass=ABCMeta):
