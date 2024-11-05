@@ -7,6 +7,7 @@ from tensorly.cp_tensor import CPTensor, cp_normalize
 from tensorly.metrics.factors import congruence_coefficient
 
 from tensornex.tpls import tPLS
+from tensornex.utils import fac2tensor
 
 
 TENSOR_DIMENSIONS = (100, 38, 65)
@@ -205,6 +206,18 @@ def test_increasing_R2X_random(n_response):
 def test_increasing_R2X(n_response, n_latent=5):
     X, Y, _ = import_synthetic((20, 8, 6, 4), n_response, n_latent)
     _test_increasing_R2X(X, Y, info=f"n_latent = {n_latent}")
+
+
+def test_reorient_factors():
+    """ Test reorient_factors will not change factorization results """
+    X = np.random.rand(20, 10, 8, 6)
+    Y = np.random.rand(20, 5)
+    tpls = tPLS(4)
+    tpls.fit(X, Y)
+    Xrecon, Yrecon = fac2tensor(tpls.X_factors), fac2tensor(tpls.Y_factors)
+    tpls.reorient_factors()
+    assert_allclose(Xrecon - fac2tensor(tpls.X_factors), 0.0)
+    assert_allclose(Yrecon - fac2tensor(tpls.Y_factors), 0.0)
 
 
 def test_transform():

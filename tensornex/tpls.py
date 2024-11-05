@@ -41,6 +41,7 @@ class tPLS(Mapping, metaclass=ABCMeta):
         return copy(self)
 
     def preprocess(self, X: np.ndarray, Y: np.ndarray):
+        """ Set up all variables needed for tPLS """
         # check input integrity
         assert X.shape[0] == Y.shape[0]
         assert Y.ndim <= 2, "Only a matrix (2-mode tensor) Y is acceptable."
@@ -49,6 +50,7 @@ class tPLS(Mapping, metaclass=ABCMeta):
 
         # mean center the data; set up factors
         self.X_dim = X.ndim
+        self.Y_dim = Y.ndim
         self.X_shape = X.shape
         self.Y_shape = Y.shape
         self.X_factors = [np.zeros((l, self.n_components)) for l in X.shape]
@@ -69,6 +71,7 @@ class tPLS(Mapping, metaclass=ABCMeta):
 
 
     def fit(self, X, Y, tol=1e-8, max_iter=100, verbose=0):
+        """ Run the fitting process on X and Y """
         original_X, original_Y = X.copy(), Y.copy()
         X, Y = self.preprocess(X, Y)
         for a in range(self.n_components):
@@ -104,6 +107,22 @@ class tPLS(Mapping, metaclass=ABCMeta):
             # Y -= T b q' = T pinv(T) u q' = T lstsq(T, u) q'; b = inv(T'T) T' u = pinv(T) u
             self.R2X[a] = calcR2X(original_X - self.X_mean, fac2tensor(self.X_factors))
             self.R2Y[a] = calcR2X(original_Y - self.Y_mean, self.predict(original_X) - self.Y_mean)
+
+    def reorient_factors(self):
+        """ After fitting, reorient factors so that the shared mode harbors the negative values """
+        # for X
+        for xi in range(self.X_dim - 1):
+            tMeans = np.sign(np.mean(self.X_factors[xi+1], axis=0))
+            assert np.all(tMeans != 0)
+            self.X_factors[0] *= tMeans[np.newaxis, :]
+            self.X_factors[xi+1] *= tMeans[np.newaxis, :]
+
+        # for Y
+        for yi in range(self.Y_dim - 1):
+            tMeans = np.sign(np.mean(self.Y_factors[yi + 1], axis=0))
+            assert np.all(tMeans != 0)
+            self.Y_factors[0] *= tMeans[np.newaxis, :]
+            self.Y_factors[yi + 1] *= tMeans[np.newaxis, :]
 
 
     def predict(self, X):
