@@ -134,6 +134,7 @@ def xplot_tPLS(X: xr.DataArray, Y: xr.DataArray, rank: int, sample_class: pd.Dat
     # Run tPLS
     plsr = tPLS(rank)
     plsr.fit(X.values, Y.values)
+    plsr.reorient_factors()
 
     # Make a list of decomposed factors dataframes
     factors = [
@@ -175,7 +176,7 @@ def reorder_table(df):
         df (pandas.DataFrame): data to be clustered; rows are treated as samples
             to be clustered
     Returns:
-        df (pandas.DataFrame): data with rows reordered via heirarchical
+        df (pandas.DataFrame): data with rows reordered via hierarchical
             clustering
     """
     if df.shape[0] <= 1:
