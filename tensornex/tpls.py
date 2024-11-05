@@ -112,7 +112,7 @@ class tPLS(Mapping, metaclass=ABCMeta):
         """ After fitting, reorient factors so that the shared mode harbors the negative values """
         # for X
         for xi in range(self.X_dim - 1):
-            tMeans = np.sign(np.mean(self.X_factors[xi+1], axis=0))
+            tMeans = np.sign(np.mean(self.X_factors[xi + 1], axis=0))
             assert np.all(tMeans != 0)
             self.X_factors[0] *= tMeans[np.newaxis, :]
             self.X_factors[xi+1] *= tMeans[np.newaxis, :]

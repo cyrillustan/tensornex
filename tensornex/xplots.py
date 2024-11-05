@@ -60,13 +60,15 @@ def plot_one_heatmap(factor: pd.DataFrame, ax=None, mode_name="",
         assert ytick_classes.shape == (factor.shape[0], 1)
         factor = factor.loc[ytick_classes.sort_values(ytick_classes.columns[0]).index, :]
 
+    max_value = np.round(np.max(np.abs(np.max(factor)), np.abs(np.min(factor))), 1)
+
     # Actually making the heatmap
     sns.heatmap(
         factor, cmap="PiYG", center=0,
         xticklabels=factor.columns,
         yticklabels=factor.index if factor.shape[0] <= 200 else None,
             # No tick labels if there are too many entries
-        cbar=True, vmin=-1.0, vmax=1.0, ax=ax,
+        cbar=True, vmin=-max_value, vmax=max_value, ax=ax,
     )
     ax.set_xlabel("Components")
     ax.set_title(mode_name)
