@@ -60,7 +60,7 @@ def plot_one_heatmap(factor: pd.DataFrame, ax=None, mode_name="",
         assert ytick_classes.shape == (factor.shape[0], 1)
         factor = factor.loc[ytick_classes.sort_values(ytick_classes.columns[0]).index, :]
 
-    max_value = np.round(np.max(np.abs(np.max(factor)), np.abs(np.min(factor))), 1)
+    max_value = np.round(np.max([np.abs(np.max(factor)), np.abs(np.min(factor))]), 1)
 
     # Actually making the heatmap
     sns.heatmap(
